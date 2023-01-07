@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    
+    <title>Quiz App</title>
+    
+    <!--CSS-->
+    <link rel="stylesheet" href="style.css">
+
+    <!--FontAwesome-->
+    <script src="https://kit.fontawesome.com/1015e78150.js" crossorigin="anonymous"></script>
+</head>
+
+<body>  
+    <div class="container1">
+        <div id="info" class="info hide">
+        <span id="qinfo"><span id="qnumber"></span></span>
+        <span class="hide" id="timer"></span>
+        </div>
+        <div id="health" class="health hide">
+            <i id="heart" class="fa-sharp fa-solid fa-heart"></i>
+            <i id="heart" class="fa-sharp fa-solid fa-heart"></i>
+            <i id="heart" class="fa-sharp fa-solid fa-heart"></i>
+        </div>
+        <hr class="hide" id="hr">
+        <div class="container2">
+            <div id="question-container" class="hide">
+                <div id="question"></div>
+            </div>
+            <div class="answers hide" id="answers">
+                <button class="btnansw" id="btna" type="button" value="button">A)</button>
+                <button class="btnansw" id="btnb" type="button" value="button">B)</button>
+                <button class="btnansw" id="btnc" type="button" value="button">C)</button>
+                <button class="btnansw" id="btnd" type="button" value="button">D)</button>
+            </div>
+            <div class="result hide" id="result"></div>
+            <div class="buttons">
+                <button id="start-btn" class="start-btn btn">Start</button>
+                <button id="next-btn" class="next-btn btn hide">Next</button>
+            </div>
+            <div class="restart-container">
+            <button id="restart-btn" class="restart-btn btn hide">Restart</button>
+        </div>
+        </div>
+    </div>
+
+
+  <script src="script.js"></script>
+</body>
+</html
