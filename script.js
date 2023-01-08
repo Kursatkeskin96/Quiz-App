@@ -9,7 +9,6 @@ const result = document.getElementById('result')
 const health = document.getElementById('health')
 const heart = document.getElementById('health').children
 
-
 const info = document.getElementById('info')
 const hr = document.getElementById('hr')
 let qNumber = document.getElementById('qnumber')
@@ -18,9 +17,40 @@ let questionNumber = 0;
 let shuffledQuestions, currentQuestionIndex
 
 
+let timerId;
+let timeLeft = 30;
+let timer = document.getElementById('timer');
+// Timer function
+function startTimer() {
+  timerId = setInterval(() => {
+    timer.classList.remove('hide');
+    timeLeft--;
+    timer.innerHTML = timeLeft; 
+    if (timeLeft === -1) {
+      questionContainerElement.classList.add('hide')
+      info.classList.add('hide')
+      health.classList.add('hide')
+      hr.classList.add('hide')
+      answerButtonsElement.classList.add('hide')
+      nextButton.classList.add('hide')
+      result.classList.remove('hide')
+      startButton.classList.add('hide')
+      restartButton.classList.remove('hide')
+      result.innerText = "Time is over."
+      questionNumber = 0; 
+      clearInterval(timerId);
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerId);
+}
 
 // Start Button
-startButton.addEventListener('click', startGame)
+startButton.addEventListener('click', () => {
+  startGame();
+})
 
 // Restart Button
 restartButton.addEventListener('click', () => { 
@@ -34,19 +64,22 @@ restartButton.addEventListener('click', () => {
   restartButton.classList.add('hide')
   currentQuestionIndex = 0
   shuffledQuestions = questions.sort(() => Math.random() - .5)
+  clearTimeout(timeoutId);
   startGame()
+  timeLeft = 30;
   questionNumber = 0;
   questionNumber++; 
 
   // When restarting game, health check.
   const currentHealth = heart.length;
   if (currentHealth === 0) {
+    for (let i = 0; i < 3 - currentHealth; i++) {
       addHeart();
-      addHeart();
-      addHeart();
+    }
     } else if (currentHealth === 1) {
-      addHeart();
-      addHeart();
+      for (let i = 0; i < 2 - currentHealth; i++) {
+        addHeart();
+      }
     } else if (currentHealth === 2) {
       addHeart();
     }
@@ -56,8 +89,9 @@ restartButton.addEventListener('click', () => {
   nextButton.addEventListener('click', () => {
     currentQuestionIndex++
     setNextQuestion()
+    timeLeft = 30;
+  
   })
-
 
  // Start Game 
   function startGame () {
@@ -75,27 +109,31 @@ restartButton.addEventListener('click', () => {
   questionNumber = 1;
   }
 
+  let timeoutId;
 // Remove Heart. If there aren't any heart, game will over.
 function removeHeart() {
   if (heart.length > 0) {
   heart[0].remove();
   }
   if (heart.length === 0) {
-  questionContainerElement.classList.add('hide')
-  info.classList.add('hide')
-  health.classList.add('hide')
-  hr.classList.add('hide')
-  answerButtonsElement.classList.add('hide')
-  nextButton.classList.add('hide')
-  result.classList.remove('hide')
-  startButton.classList.add('hide')
-  restartButton.classList.remove('hide')
-  result.innerText = "You have lost your 3 hearts... Click on restart button to play again."
-  clearInterval(timerId);
-  const buttons = document.getElementById('buttons')
-  buttons.classList.add('hide')
+    restartButton.classList.remove('hide')
+    const buttons = document.getElementsByClassName('buttons')
+    for (const button of buttons) {
+      button.classList.add('hide');
+    }
+    timeoutId = setTimeout(() => {
+      questionContainerElement.classList.add('hide')
+      info.classList.add('hide')
+      health.classList.add('hide')
+      hr.classList.add('hide')
+      answerButtonsElement.classList.add('hide')
+      result.classList.remove('hide')
+      startButton.classList.add('hide')
+      result.innerText = "You have lost your 3 hearts... Click on restart button to play again."
+      clearInterval(timerId);
+    }, 5000)  
   }
-  }
+}
 
   // Adding missing hearts. I'm using it when the game restart.
   function addHeart (){
@@ -107,6 +145,7 @@ function removeHeart() {
 
   function setNextQuestion () {
     resetState()
+    startTimer()
     if(heart.length > 0){
     questionNumber++;
     } else if (heart.length === 0) {
@@ -132,40 +171,17 @@ function showQuestion(question) {
  })
 }
 
-
-// Timer on the top-right on the container.
-let timeLeft = 30;
-let timer = document.getElementById('timer');
-let timerId = setInterval(countdown, 1000);
-  function countdown() {
-    timer.classList.remove('hide')
-    // If time is up, game will be over.
-  if (timeLeft == -1) {
-    questionContainerElement.classList.add('hide')
-    info.classList.add('hide')
-    health.classList.add('hide')
-    hr.classList.add('hide')
-    answerButtonsElement.classList.add('hide')
-    nextButton.classList.add('hide')
-    result.classList.remove('hide')
-    startButton.classList.add('hide')
-    restartButton.classList.remove('hide')
-    result.innerText = "Time is over."
-    questionNumber = 0; 
-  } else {
-    timer.innerHTML = timeLeft;
-    timeLeft--;
+function resetState() {
+  clearInterval(timerId);
+  clearTimeout(timeoutId);
+  const buttons = document.getElementsByClassName('buttons')
+    for (const button of buttons) {
+      button.classList.remove('hide');
     }
-    }
-
-  function resetState() {
-    clearInterval(timerId);
-    timerId = setInterval(countdown, 1000);
-    timeLeft = 30;
-    nextButton.classList.add('hide')
-    while(answerButtonsElement.firstChild) {
-    answerButtonsElement.removeChild(answerButtonsElement.firstChild)
-    }
+  nextButton.classList.add('hide')
+  while(answerButtonsElement.firstChild) {
+  answerButtonsElement.removeChild(answerButtonsElement.firstChild)
+  }
 }
 
 
@@ -178,7 +194,7 @@ let timerId = setInterval(countdown, 1000);
   
     // Get all answer buttons
     const buttons = document.querySelectorAll('.btnansw');
-  
+    stopTimer();
     // Add click event listener to each answer button
     buttons.forEach(button => {
     button.addEventListener('click', event => {
@@ -208,17 +224,9 @@ let timerId = setInterval(countdown, 1000);
     if (shuffledQuestions.length > currentQuestionIndex + 1) {
       nextButton.classList.remove('hide')
     } else {
-    questionNumber--;
-    questionNumber--;
-    questionNumber--;
-    questionNumber--;
-    questionNumber--;
-    questionNumber--;
-    questionNumber--;
-    questionNumber--;
-    questionNumber--;
-    questionNumber--;
-
+      for (let i = 0; i < 10; i++){
+        questionNumber--;
+      }
     startButton.classList.add ('hide');
     result.innerText = 'Congratulations! You have past this quiz!';
     result.classList.remove('hide');
@@ -240,7 +248,6 @@ let timerId = setInterval(countdown, 1000);
     element.classList.remove('correct')
     element.classList.remove('wrong')  
 }
-
 
 //Questions
 const questions = [
